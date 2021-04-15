@@ -11,29 +11,25 @@ namespace WeatherApi.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
+        private readonly string dataSource = @"/Users/sofia.rokkones/Projects/Code Is King/temperatures.csv";
+
+        private readonly IWeatherClient _client;
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherClient client)
         {
             _logger = logger;
+            _client = client;
         }
-
+        
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IActionResult> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                })
-                .ToArray();
+            //var data = await new ReadTempData().Read(dataSource);
+
+            var data = await _client.Get(dataSource);
+            return Ok(data.ToList());
         }
     }
 }
