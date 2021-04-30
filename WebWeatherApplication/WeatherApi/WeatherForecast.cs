@@ -1,30 +1,31 @@
 using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WeatherApi
 {
-    public class WeatherForecast
+    public class WeatherForecast : IWeatherForecast
     {
-        public int TimeUnixEpoch { get; set; }
+        public long TimeUnixEpoch { get; set; }
         public DateTime Date { get; set; }
-
         public decimal TemperatureC { get; set; }
-
-        public int TemperatureF => 32 + (int) (TemperatureC / (decimal) 0.5556);
-
-        public string Summary { get; set; }
         
-        
-        public static WeatherForecast FromCsv(string csvLine)
+        public List<WeatherForecast> Map(SMHIWeatherForecast data)
         {
-            var values = csvLine.Split(';');
-            var tempData = new WeatherForecast
+            var result = new List<WeatherForecast>();
+            foreach (var tempdata in data.value)
             {
-                TimeUnixEpoch = Convert.ToInt32(values[0]),
-                TemperatureC = Convert.ToDecimal(values[1]),
-                Date = Convert.ToDateTime(values[2])
-            };
-            
-            return tempData;
+                DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeMilliseconds(tempdata.date);
+                DateTime dateTime = dateTimeOffSet.DateTime;
+                
+                result.Add(new WeatherForecast
+                {
+                    TemperatureC = decimal.Parse(tempdata.value),
+                    TimeUnixEpoch = tempdata.date,
+                    Date = dateTime
+                });
+            }
+            return result;
         }
     }
 }

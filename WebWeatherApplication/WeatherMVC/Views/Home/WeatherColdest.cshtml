@@ -1,0 +1,30 @@
+@model WeatherViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div style="text-align: left;">
+    <h1 class="display-4">Coldest temperature</h1>
+    <p>During the last four month in Stockholm</p>
+    <table style="width: 100%" class="table table-responsive table-hover">
+        <tr>
+            <th>
+                Date
+            </th>
+            <th>
+                Temperature
+            </th>
+        </tr>
+        <code>
+            <tr>
+                <th>
+                    @Model.date.ToString(string.Format("dddd, dd MMMM yyyy HH:mm:ss"))
+                </th>
+                <th>
+                    @Model.temperatureC °C
+                </th>
+            </tr>
+        </code>
+    </table>
+</div>
